@@ -453,7 +453,9 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
         cb = plt.colorbar(im, ax=ax, format='%.1f')
      
     ax.set_xlabel('Days')   
-    
+
+    if save_plots:
+       plt.savefig('plots/temp_sal_over_time%s.png' %suffix, bbox_inches='tight')
     
     ## plot initial and final T-S profiles
     from mpl_toolkits.axes_grid1 import host_subplot
