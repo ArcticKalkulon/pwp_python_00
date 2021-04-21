@@ -74,7 +74,7 @@ def run_demo2(winds_ON=True, emp_ON=True, heat_ON=True, drag_ON=True):
     forcing, pwp_out = PWP.run(met_data=forcing_fname, prof_data=prof_fname, suffix=suffix, save_plots=True, param_kwds=p)
      
 
-def set_params(lat, dt=3., dz=1., max_depth=100., mld_thresh=1e-4, dt_save=1., rb=0.65, rg=0.25, rkz=0., beta1=0.6, beta2=20.0, heat_ON=True, winds_ON=True, emp_ON=True, drag_ON=True):
+def set_params(lat, dt=1., dz=1., max_depth=100., mld_thresh=1e-4, dt_save=1., rb=0.65, rg=0.25, rkz=0., beta1=0.6, beta2=20.0, heat_ON=True, winds_ON=True, emp_ON=True, drag_ON=True):
     
     """
     This function sets the main paramaters/constants used in the model.
@@ -461,8 +461,7 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
     from mpl_toolkits.axes_grid1 import host_subplot
     import mpl_toolkits.axisartist as AA
     
-    plt.figure()
-    host = host_subplot(111, axes_class=AA.Axes)
+    fig, host = plt.subplots()
     host.invert_yaxis()
     par1 = host.twiny() #par for parasite axis
     host.set_ylabel("Depth (m)")
@@ -470,23 +469,23 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
     par1.set_xlabel("Salinity (PSU)")
     
     p1, = host.plot(pwp_out['temp'][:,0], pwp_out['z'], '--r', label='$T_i$')
-    host.plot(pwp_out['temp'][:,-1], pwp_out['z'], '-r', label='$T_f$')
+    p11, = host.plot(pwp_out['temp'][:,-1], pwp_out['z'], '-r', label='$T_f$')
     p2, = par1.plot(pwp_out['sal'][:,0], pwp_out['z'], '--b', label='$S_i$')
-    par1.plot(pwp_out['sal'][:,-1], pwp_out['z'], '-b', label='$S_f$')
+    p22, = par1.plot(pwp_out['sal'][:,-1], pwp_out['z'], '-b', label='$S_f$')
     host.grid(True)
-    host.legend(loc=0, ncol=2)
-    #par1.legend(loc=3)
-    
-    host.axis["bottom"].label.set_color(p1.get_color())
-    host.axis["bottom"].major_ticklabels.set_color(p1.get_color())
-    host.axis["bottom"].major_ticks.set_color(p1.get_color())
 
-    par1.axis["top"].label.set_color(p2.get_color())
-    par1.axis["top"].major_ticklabels.set_color(p2.get_color())
-    par1.axis["top"].major_ticks.set_color(p2.get_color())
+    lns = [p1,p11,p2,p22]
+    labs = [l.get_label() for l in lns]
+    host.legend(lns, labs, loc=0,ncol=2)
+    
+    host.tick_params(axis='x', labelcolor=p1.get_color(),direction="in",colors=p1.get_color())
+    host.xaxis.label.set_color(p1.get_color())
+
+    par1.tick_params(axis='x', labelcolor=p2.get_color(),direction="out",colors=p2.get_color())
+    par1.xaxis.label.set_color(p2.get_color())
     
     if save_plots:     
-        plt.savefig('plots/initial_final_TS_profiles%s.png' %suffix, bbox_inches='tight')
+        fig.savefig('plots/initial_final_TS_profiles%s.png' %suffix, bbox_inches='tight')
         
     
     

@@ -537,10 +537,11 @@ if __name__ == "__main__":
     
     print("Running default test case using data from Beaufort gyre...")
     
-    forcing_fname = 'beaufort_met.nc'
+    #forcing_fname = 'beaufort_met.nc'
+    forcing_fname = 'Svalbard_Lufthavn.nc'
     prof_fname = 'beaufort_profile.nc'
     print("Running Test Case 1 with data from Beaufort gyre...")
-    forcing, pwp_out = run(met_data=forcing_fname, prof_data=prof_fname, suffix='demo1_nodiff', save_plots=True, diagnostics=False)
+    forcing, pwp_out = run(met_data=forcing_fname, prof_data=prof_fname, suffix='demo1_nodiff_Svalbard_Lufthavn', save_plots=True, diagnostics=False)
     print("----------------------------------------------------------------------------")
     print("NOTE:\nSee run_demo1() and run_demo2() in PWP_helper.py for more examples.")
     print("Additional details can be found here: https://github.com/earlew/pwp_python_00.")
