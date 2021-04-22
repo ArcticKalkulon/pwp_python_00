@@ -23,11 +23,10 @@ del df['Ser']
 del df['Meas']
 del df['F (�g/l)']
 del df['Opt']
-#del df['Dens']
 del df['Date']
-#del df['Time']
 del df['Unnamed: 10']
 del df['Unnamed: 11']
+
 
 # add column with latitude in
 lat = 78
@@ -46,7 +45,8 @@ df["Depth(u)"]=np.arange(0,np.floor_divide(bottom, 1)+1, 1)     # fix depth to 1
 
 df = df.groupby('binned depth').mean().reset_index()            # convert group back to data frame
 del df['binned depth']                                          # delete binned depth data frame
-
+#del df['Time']                                                 # delete time from data frame to match model input
+#del df['Dens']                                                 # delete density from data frame to match model input
 
 df.info()
 print(df.tail())                            # double check tail of dataset
