@@ -10,10 +10,15 @@ df['Time'] = df.Date + " " + df.Time
 # format the joint time/date column according to yyyy-mm-yy hh:mm:ss
 df['Time'] = pd.to_datetime(df['Time'], format='%d/%m/%Y %H:%M:%S')
 
+df['z'] = df['Depth(u)']
+df['t'] = df['Temp']
+df['s'] = df['Sal.']
+
+
 print(df.columns)                           # print the names of the columns to see what's there
-bottom = df['Depth(u)'].max()               # find the value of the maximum depth - for fun
+bottom = df['z'].max()               # find the value of the maximum depth - for fun
 #print(bottom)
-where_bottom = df['Depth(u)'].idxmax()      # find the index of the maximum depth
+where_bottom = df['z'].idxmax()      # find the index of the maximum depth
 #print(where_bottom)
 df = df[0:where_bottom+1]                   # define new datafield only until index with maximum depth
 #print(df.tail())                            # double check tail of dataset
@@ -26,31 +31,35 @@ del df['Opt']
 del df['Date']
 del df['Unnamed: 10']
 del df['Unnamed: 11']
-
+del df['Time']                                                 # delete time from data frame to match model input
+del df['Density']                                                 # delete density from data frame to match model input
+del df['Depth(u)']
+del df['Temp']
+del df['Sal.']
 
 # add column with latitude in
 lat = 78
-df['Lat'] = pd.Series([lat for x in range(len(df.index))])
+df['lat'] = pd.Series([lat for x in range(len(df.index))])
 
 # rearrange columns so they match the needed model input
 #df = df[df.columns[[3, 1, 0, 5, 4, 2]]]
-df = df.reindex(columns= ['Depth(u)', 'Temp', 'Sal.', 'Lat', 'Time', 'Density'])
+df = df.reindex(columns= ['z', 't', 's', 'lat'])
 
 # create means over one meter depth
 bins = np.arange(0,np.floor_divide(bottom, 1)+2, 1)             # create bins in 1m steps
-df['binned depth'] = pd.cut(df['Depth(u)'], bins)               # sort depth into bins
+df['binned depth'] = pd.cut(df['z'], bins)               # sort depth into bins
 df=df.groupby('binned depth').mean()                            # group the sorted depths and create mean over bin 
 df=df.interpolate()                                             # interpolate to get rid of NaNs
-df["Depth(u)"]=np.arange(0,np.floor_divide(bottom, 1)+1, 1)     # fix depth to 1m steps after they have vanished due to interpolation
+df["z"]=np.arange(0,np.floor_divide(bottom, 1)+1, 1)     # fix depth to 1m steps after they have vanished due to interpolation
 
 df = df.groupby('binned depth').mean().reset_index()            # convert group back to data frame
 del df['binned depth']                                          # delete binned depth data frame
-#del df['Time']                                                 # delete time from data frame to match model input
-#del df['Dens']                                                 # delete density from data frame to match model input
+
+
 
 df.info()
 print(df.tail())                            # double check tail of dataset
 
 # save dataframe as netcdf
 output_xr = df.to_xarray()
-output_xr.to_netcdf(path="test.nc", mode='w')
+output_xr.to_netcdf(path=r'C:\Users\Daria\Git\pwp_python_00\input_data\input_januar.nc', mode='w')
