@@ -23,6 +23,7 @@ import os
 from datetime import datetime
 import PWP_helper as phf
 import imp
+import ipdb
 
 
 imp.reload(phf)
@@ -292,7 +293,7 @@ def pwpgo(forcing, params, pwp_out, diagnostics):
     
         ### Do the gradient Richardson number instability form of mixing ###
         if rg > 0:
-            temp, sal, dens, uvel, vvel = grad_mix(temp, sal, dens, uvel, vvel, dz, g, rg, zlen)
+            temp, sal, dens, uvel, vvel = grad_mix(temp, sal, dens, uvel, vvel, dz, g, rg, zlen,n)
             
         
         ### Apply diffusion ###
@@ -314,6 +315,21 @@ def pwpgo(forcing, params, pwp_out, diagnostics):
         #do diagnostics
         if diagnostics==1:
             phf.livePlots(pwp_out, n)
+
+    fig,ax = plt.subplots(1,4)
+    ax[0].plot(temp,z)
+    ax[0].set_title("temp")
+    ax[1].plot(sal)
+    ax[1].set_title("sal")
+    ax[2].plot(dens)
+    ax[2].set_title("denS")
+    ax[3].plot(np.diff(dens))
+    ax[3].axvline(0,color="black")
+    ax[3].set_title("dens diff")
+    for i in range(4):
+        ax[i].invert_yaxis()
+        ax[i].grid(linewidth=.3)
+    plt.show()
         
     return pwp_out
     
@@ -418,7 +434,7 @@ def bulk_mix(t, s, d, u, v, g, rb, nz, z, mld_idx):
             
     return t, s, d, u, v
 
-def grad_mix(t, s, d, u, v, dz, g, rg, nz):
+def grad_mix(t, s, d, u, v, dz, g, rg, nz,n):
     
     #copied from source script:
     # %  This function performs the gradeint Richardson Number relaxation
@@ -462,7 +478,7 @@ def grad_mix(t, s, d, u, v, dz, g, rg, nz):
             break
             
         #Mix the cells j_min_idx and j_min_idx+1 that had the smallest Richardson Number
-        t, s, d, u, v = stir(t, s, d, u, v, rc, r_min, j_min_idx)
+        t, s, d, u, v = stir(t, s, d, u, v, rc, r_min, j_min_idx,n)
         
         #recompute the rich number over the part of the profile that has changed
         j1 = j_min_idx-2
@@ -477,7 +493,7 @@ def grad_mix(t, s, d, u, v, dz, g, rg, nz):
                      
     return t, s, d, u, v
                 
-def stir(t, s, d, u, v, rc, r, j):
+def stir(t, s, d, u, v, rc, r, j,n):
     
     #copied from source script:
     
@@ -511,6 +527,7 @@ def stir(t, s, d, u, v, rc, r, j):
     #recompute density 
     #d[j:j+1] = sw.dens0(s[j:j+1], t[j:j+1]) 
     #have to be careful here. x[j:j+1] in python is not the same as x[[j,j+1]]. We want the latter
+    #ipdb.set_trace(context=9,cond=n>=12)
     d[[j,j+1]] = sw.dens0(s[[j,j+1]], t[[j,j+1]])
     
     du = (u[j+1]-u[j])*f/2
@@ -539,9 +556,10 @@ if __name__ == "__main__":
     
     #forcing_fname = 'beaufort_met.nc'
     forcing_fname = 'Svalbard_Lufthavn.nc'
-    prof_fname = 'beaufort_profile.nc'
+    #prof_fname = 'beaufort_profile.nc'
+    prof_fname = 'input_januar.nc'
     print("Running Test Case 1 with data from Beaufort gyre...")
-    forcing, pwp_out = run(met_data=forcing_fname, prof_data=prof_fname, suffix='demo1_nodiff_Svalbard_Lufthavn', save_plots=True, diagnostics=False)
+    forcing, pwp_out = run(met_data=forcing_fname, prof_data=prof_fname, suffix='demo1_SvalLuft_januarCTD', save_plots=True, diagnostics=False)
     print("----------------------------------------------------------------------------")
     print("NOTE:\nSee run_demo1() and run_demo2() in PWP_helper.py for more examples.")
     print("Additional details can be found here: https://github.com/earlew/pwp_python_00.")

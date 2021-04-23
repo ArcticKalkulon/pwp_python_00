@@ -74,7 +74,7 @@ def run_demo2(winds_ON=True, emp_ON=True, heat_ON=True, drag_ON=True):
     forcing, pwp_out = PWP.run(met_data=forcing_fname, prof_data=prof_fname, suffix=suffix, save_plots=True, param_kwds=p)
      
 
-def set_params(lat, dt=1., dz=1., max_depth=100., mld_thresh=1e-4, dt_save=1., rb=0.65, rg=0.25, rkz=0., beta1=0.6, beta2=20.0, heat_ON=True, winds_ON=True, emp_ON=True, drag_ON=True):
+def set_params(lat, dt=3., dz=1., max_depth=277., mld_thresh=1e-4, dt_save=1., rb=0.65, rg=0.25, rkz=0., beta1=0.6, beta2=20.0, heat_ON=True, winds_ON=True, emp_ON=True, drag_ON=True):
     
     """
     This function sets the main paramaters/constants used in the model.
@@ -274,6 +274,8 @@ def prep_data(met_dset, prof_dset, params):
     temp0 = init_prof['t'] #initial profile temperature
     sal0 = init_prof['s'] #intial profile salinity
     dens0 = sw.dens0(sal0, temp0) #intial profile density       
+
+
     
     #initialize variables for output
     pwp_out = {}
@@ -384,6 +386,7 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
         tvec = pwp_out['time']
     else:
         tvec = time_vec
+    print(tvec, len(tvec))
     
     axes = axes.flatten()
     ##plot surface heat flux
@@ -391,6 +394,7 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
     axes[0].plot(tvec, forcing['qlat'], label='$Q_{lat}$')
     axes[0].plot(tvec, forcing['qsens'], label='$Q_{sens}$')
     axes[0].plot(tvec, forcing['sw'], label='$Q_{sw}$')
+    #axes[0].axvline(tvec[10],color="black")
     axes[0].hlines(0, tvec[0], pwp_out['time'][-1], linestyle='-', color='0.3')
     axes[0].plot(tvec, forcing['q_in']-forcing['q_out'], ls='-', lw=2, color='k', label='$Q_{net}$')   
     axes[0].set_ylabel('Heat flux (W/m2)')
@@ -402,6 +406,7 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
     
     
     ##plot wind stress
+    #axes[1].axvline(tvec[10],color="black")
     axes[1].plot(tvec, forcing['tx'], label=r'$\tau_x$')
     axes[1].plot(tvec, forcing['ty'], label=r'$\tau_y$')
     axes[1].hlines(0, tvec[0], pwp_out['time'][-1], linestyle='--', color='0.3')
@@ -424,6 +429,7 @@ def makeSomePlots(forcing, pwp_out, time_vec=None, save_plots=False, suffix=''):
     emp_mmpd = forcing['emp']*1000*3600*24 #convert to mm per day
     evap_mmpd = forcing['evap']*1000*3600*24 #convert to mm per day
     precip_mmpd = forcing['precip']*1000*3600*24 #convert to mm per day
+    #axes[2].axvline(tvec[10],color="black")
     axes[2].plot(tvec, precip_mmpd, label='$P$', lw=1, color='b')
     axes[2].plot(tvec, evap_mmpd, label='$-E$', lw=1, color='r')
     axes[2].plot(tvec, emp_mmpd, label='$|E| - P$', lw=2, color='k')
