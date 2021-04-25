@@ -27,6 +27,7 @@ df['Time'] = pd.to_datetime(df['Time'], format='%d/%m/%Y %H:%M:%S')
 df['z'] = df['Depth(u)']
 df['t'] = df['Temp']
 df['s'] = df['Sal.']
+df['d'] = df['Density']
 
 
 #print(df.columns)                           # print the names of the columns to see what's there
@@ -57,7 +58,7 @@ df['lat'] = pd.Series([lat for x in range(len(df.index))])
 
 # rearrange columns so they match the needed model input
 #df = df[df.columns[[3, 1, 0, 5, 4, 2]]]
-df = df.reindex(columns= ['z', 't', 's', 'lat'])
+df = df.reindex(columns= ['z', 't', 's', 'lat', 'd'])
 
 # create means over one meter depth
 bins = np.arange(0,np.floor_divide(bottom, 1)+2, 1)             # create bins in 1m steps
@@ -73,29 +74,37 @@ del df['binned depth']                                          # delete binned 
 df = df.iloc[:-1,:]
 
 length = df['t'].shape[0]
-N=2
-ker_len=41
+N=4
+ker_len=10
 ker = (1.0/ker_len)*np.ones(ker_len)
-start = 65
+start = 46
+end = 16
 x = df['z'].to_numpy()[[start,-1]]
 y_t = df['t'].to_numpy()[[start,-1]]
 y_s = df['s'].to_numpy()[[start,-1]]
 m_t,t_t = np.polyfit(x,y_t,deg=1)
 m_s,t_s = np.polyfit(x,y_s,deg=1)
+x2 = df['z'].to_numpy()[[0,end]]
+y_t2 = df['t'].to_numpy()[[0,end]]
+y_s2 = df['s'].to_numpy()[[0,end]]
+m_t2,t_t2 = np.polyfit(x2,y_t2,deg=1)
+m_s2,t_s2 = np.polyfit(x2,y_s2,deg=1)
 
 
 fig,ax = plt.subplots(1,4)
 #ax[0].plot(sw.dens0(df['s'],df['t']),df['z'])
 ax[0].plot(df['t'],df['z'])
-#for i in range(N):
-#    df['t'] = filters.convolve1d(df['t'], ker)
+for i in range(N):
+    df['t'] = filters.convolve1d(df['t'], ker)
 df['t'][start:] = m_t*df['z'][start:]+t_t
+df['t'][:end] = m_t2*df['z'][:end]+t_t2
 ax[0].plot(df['t'],df['z'])
 ax[0].set_title("temp")
 ax[1].plot(df['s'],df['z'])
-#for i in range(N):
-#    df['s'] = filters.convolve1d(df['s'], ker)
-df['s'][start:] = m_s*df['s'][start:]+t_s
+for i in range(N):
+    df['s'] = filters.convolve1d(df['s'], ker)
+df['s'][start:] = m_s*df['z'][start:]+t_s
+df['s'][:end] = m_s*df['z'][:end]+t_s2
 ax[1].plot(df['s'],df['z'])
 ax[1].set_title("sal")
 ax[2].plot(sw.dens0(df['s'],df['s']),df['z'])
@@ -110,7 +119,7 @@ for i in range(4):
     ax[i].grid(linewidth=.3)
 
 plt.savefig('../plots/testtest.pdf',bbox_inches='tight')
-#plt.show()
+plt.show()
 ############################################################################
 
 df.info()

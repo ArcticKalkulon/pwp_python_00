@@ -74,7 +74,11 @@ def run_demo2(winds_ON=True, emp_ON=True, heat_ON=True, drag_ON=True):
     forcing, pwp_out = PWP.run(met_data=forcing_fname, prof_data=prof_fname, suffix=suffix, save_plots=True, param_kwds=p)
      
 
+<<<<<<< HEAD
 def set_params(lat, dt=3., dz=1., max_depth=277., mld_thresh=1e-4, dt_save=1., rb=0.65, rg=0.25, rkz=0., beta1=0.6, beta2=20.0, heat_ON=True, winds_ON=True, emp_ON=True, drag_ON=True):
+=======
+def set_params(lat, dt=1., dz=1., max_depth=277., mld_thresh=1e-4, dt_save=1., rb=0.65, rg=0.25, rkz=0., beta1=0.6, beta2=20.0, heat_ON=True, winds_ON=True, emp_ON=True, drag_ON=True):
+>>>>>>> 9d09f0ada4b8e8be56eff0926702185ddb433d4f
     
     """
     This function sets the main paramaters/constants used in the model.

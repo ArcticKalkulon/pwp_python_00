@@ -556,7 +556,10 @@ if __name__ == "__main__":
     
     #forcing_fname = 'beaufort_met.nc'
     forcing_fname = 'Svalbard_Lufthavn.nc'
+<<<<<<< HEAD
     #prof_fname = 'beaufort_profile.nc'
+=======
+>>>>>>> 9d09f0ada4b8e8be56eff0926702185ddb433d4f
     prof_fname = 'input_januar.nc'
     print("Running Test Case 1 with data from Beaufort gyre...")
     forcing, pwp_out = run(met_data=forcing_fname, prof_data=prof_fname, suffix='demo1_SvalLuft_januarCTD', save_plots=True, diagnostics=False)
