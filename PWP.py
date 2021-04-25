@@ -539,7 +539,7 @@ if __name__ == "__main__":
     
     #forcing_fname = 'beaufort_met.nc'
     forcing_fname = 'Svalbard_Lufthavn.nc'
-    prof_fname = 'beaufort_profile.nc'
+    prof_fname = 'input_januar.nc'
     print("Running Test Case 1 with data from Beaufort gyre...")
     forcing, pwp_out = run(met_data=forcing_fname, prof_data=prof_fname, suffix='demo1_nodiff_Svalbard_Lufthavn', save_plots=True, diagnostics=False)
     print("----------------------------------------------------------------------------")

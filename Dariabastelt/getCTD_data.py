@@ -13,6 +13,7 @@ df['Time'] = pd.to_datetime(df['Time'], format='%d/%m/%Y %H:%M:%S')
 df['z'] = df['Depth(u)']
 df['t'] = df['Temp']
 df['s'] = df['Sal.']
+df['d'] = df['Density']
 
 
 print(df.columns)                           # print the names of the columns to see what's there
@@ -43,7 +44,7 @@ df['lat'] = pd.Series([lat for x in range(len(df.index))])
 
 # rearrange columns so they match the needed model input
 #df = df[df.columns[[3, 1, 0, 5, 4, 2]]]
-df = df.reindex(columns= ['z', 't', 's', 'lat'])
+df = df.reindex(columns= ['z', 't', 's', 'lat', 'd'])
 
 # create means over one meter depth
 bins = np.arange(0,np.floor_divide(bottom, 1)+2, 1)             # create bins in 1m steps
